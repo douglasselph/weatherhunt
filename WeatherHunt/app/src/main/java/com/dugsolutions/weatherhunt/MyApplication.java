@@ -1,13 +1,10 @@
-package com.dugsolutions.weatherhunt.app;
+package com.dugsolutions.weatherhunt;
 
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-
-import com.dugsolutions.weatherhunt.BuildConfig;
-import com.dugsolutions.weatherhunt.server.WeatherHunterService;
 
 import timber.log.Timber;
 
