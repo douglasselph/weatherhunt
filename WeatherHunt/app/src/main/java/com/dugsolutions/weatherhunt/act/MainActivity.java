@@ -79,6 +79,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onEvent(WeatherResult event) {
-        Timber.d("MYDEBUG: onEvent(" + event.getResult());
+        Timber.d("MYDEBUG: onEvent(" + event.getResult() + ")");
     }
 }

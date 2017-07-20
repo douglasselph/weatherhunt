@@ -3,10 +3,12 @@ package com.dugsolutions.weatherhunt.server;
 import android.app.DownloadManager;
 import android.app.IntentService;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import com.dugsolutions.weatherhunt.event.WeatherResult;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -31,7 +33,7 @@ public class WeatherHunterService extends IntentService {
 
     static final String SERVER_NAME = "WeatherHunterService";
     static final String KEY = "34c23c88e7314574828220153171907";
-    static final String SEARCH = "http://api.worldweatheronline.com/premium/v1/search.ashx";
+    static final String AUTHORITY = "api.worldweatheronline.com";
 
     public WeatherHunterService() {
         super(SERVER_NAME);
@@ -41,40 +43,24 @@ public class WeatherHunterService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         String search_locaton = intent.getExtras().getString(SEARCH_LOCATION);
         try {
-            JSONObject json = new JSONObject();
-            json.accumulate("key", KEY);
-            json.accumulate("format", "json");
-            json.accumulate("query", search_locaton);
-            String result = post(SEARCH, json);
-
-            Timber.d("RESULT=" + result);
-            EventBus.getDefault().post(new WeatherResult(result));
-
-        } catch (Exception ex) {
-            Timber.e(ex);
-        }
-    }
-
-    String post(String target, JSONObject json) {
-        try {
-            URL url = new URL(target);
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme("http")
+                    .authority(AUTHORITY)
+                    .appendPath("premium")
+                    .appendPath("v1")
+                    .appendPath("search.ashx")
+                    .appendQueryParameter("query", search_locaton)
+                    .appendQueryParameter("format", "json")
+                    .appendQueryParameter("key", KEY);
+            Uri uri = builder.build();
+            URL url = new URL(uri.toString());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            Writer writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream(), "UTF-8"));
-            Timber.d("MYDEBUG: REQUEST AWAY: " + json.toString());
-            writer.write(json.toString());
-            writer.close();
             InputStream inputStream;
-            try {
-                inputStream = connection.getInputStream();
-            } catch (Exception ex) {
-                Timber.e("Server response not available. (" + ex.getMessage() + ")");
-                return null;
-            }
+            inputStream = connection.getInputStream();
             if (inputStream == null) {
                 Timber.e("NULL response from server");
-                return null;
+                connection.disconnect();
+                return;
             }
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             StringBuilder sbuf = new StringBuilder();
@@ -85,10 +71,17 @@ public class WeatherHunterService extends IntentService {
                 }
                 sbuf.append(inputLine);
             }
-            return sbuf.toString();
+            String result = sbuf.toString();
+            EventBus.getDefault().post(new WeatherResult(result));
+
+            inputStream.close();
+            connection.disconnect();
+
+            JSONObject object = new JSONObject(result);
+            JSONObject root = object.getJSONObject("search_api");
+            JSONArray elements = root.getJSONArray("result");
         } catch (Exception ex) {
             Timber.e(ex);
-            return null;
         }
     }
 }
