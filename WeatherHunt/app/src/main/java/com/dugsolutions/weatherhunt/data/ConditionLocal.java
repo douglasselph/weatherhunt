@@ -1,6 +1,10 @@
 package com.dugsolutions.weatherhunt.data;
 
+import android.graphics.Typeface;
 import android.net.Uri;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -14,9 +18,10 @@ import timber.log.Timber;
 
 public class ConditionLocal {
 
-    public static final SimpleDateFormat timeOnlyFormat = new SimpleDateFormat("HH:MM aa");
     public static final SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd");
-    public static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMM dd HH:MM aa");
+    public static final SimpleDateFormat dateOnlyFormat2 = new SimpleDateFormat("MMM dd");
+    public static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMM dd hh:mm aa");
+    public static final SimpleDateFormat dateTimeFormat2 = new SimpleDateFormat("yyyy-MM-dd hh:mm aa");
 
     static final char DEGREE = (char) 0x00B0;
 
@@ -27,6 +32,7 @@ public class ConditionLocal {
     public URL weatherIconUrl;
     public String weatherDesc;
     public float precipMM;
+    boolean hasTimeOffset;
 
     @Override
     public String toString() {
@@ -47,9 +53,12 @@ public class ConditionLocal {
         return sbuf.toString();
     }
 
-    public String getTimeString() {
+    String getTimeString() {
         if (time > 0) {
-            return dateTimeFormat.format(time);
+            if (hasTimeOffset) {
+                return dateTimeFormat.format(time);
+            }
+            return dateOnlyFormat2.format(time);
         }
         return "ERROR";
     }
@@ -57,10 +66,12 @@ public class ConditionLocal {
     public void setTimeToday(String timeToday) {
         if (timeToday != null) {
             try {
-                String midnight = dateOnlyFormat.format(new Date(System.currentTimeMillis()));
-                Date midnightDate = dateOnlyFormat.parse(midnight);
-                Date timeOffset = timeOnlyFormat.parse(timeToday);
-                time = midnightDate.getTime() + timeOffset.getTime();
+                StringBuilder sbuf = new StringBuilder();
+                sbuf.append(dateOnlyFormat.format(new Date(System.currentTimeMillis())));
+                sbuf.append(" ");
+                sbuf.append(timeToday);
+                time = dateTimeFormat2.parse(sbuf.toString()).getTime();
+                hasTimeOffset = true;
             } catch (Exception ex) {
                 Timber.e(ex);
             }
@@ -71,14 +82,15 @@ public class ConditionLocal {
         if (timeNow != null) {
             float hours = Integer.parseInt(timeNow) / 100f;
             time = base + (int) (hours * 1000 * 60 * 60);
+            hasTimeOffset = (hours > 0);
         }
     }
 
-    public String getDesc() {
+    String getDesc() {
         return weatherDesc;
     }
 
-    public String getTempString() {
+    String getTempString() {
         StringBuilder sbuf = new StringBuilder();
         if (tempC != null) {
             sbuf.append(tempC);
@@ -94,6 +106,32 @@ public class ConditionLocal {
             sbuf.append(DEGREE);
         }
         return sbuf.toString();
+    }
+
+    public CharSequence getLine() {
+        StringBuilder sbuf = new StringBuilder();
+        sbuf.append(getTimeString());
+        int endTime = sbuf.length();
+        if (tempC != null || tempF != null) {
+            sbuf.append("  ");
+            sbuf.append(getTempString());
+            if (precipMM > 0) {
+                sbuf.append("  ");
+                sbuf.append("Precip ");
+                sbuf.append(precipMM);
+                sbuf.append(" mm");
+            }
+        }
+        sbuf.append("\n");
+        int beginDesc = sbuf.length();
+        sbuf.append(getDesc());
+        int endDesc = sbuf.length();
+
+        SpannableString span = new SpannableString(sbuf.toString());
+        span.setSpan(new StyleSpan(Typeface.BOLD), 0, endTime, 0);
+        span.setSpan(new RelativeSizeSpan(1.1f), 0, endTime, 0);
+        span.setSpan(new RelativeSizeSpan(1.1f), beginDesc, endDesc, 0);
+        return span;
     }
 
     public Uri getIconUri() {

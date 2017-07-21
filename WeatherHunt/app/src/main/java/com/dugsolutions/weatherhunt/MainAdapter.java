@@ -28,9 +28,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CustomViewHold
 
     protected class CustomViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.icon) ImageView iconView;
-        @BindView(R.id.when) TextView whenView;
-        @BindView(R.id.desc) TextView descView;
-        @BindView(R.id.temperature) TextView temperatureView;
+        @BindView(R.id.line) TextView lineView;
 
         public CustomViewHolder(View view) {
             super(view);
@@ -59,9 +57,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CustomViewHold
     @Override
     public void onBindViewHolder(final CustomViewHolder holder, int position) {
         ConditionLocal cond = mResult.getCondition(position);
-        holder.whenView.setText(cond.getTimeString());
-        holder.descView.setText(cond.getDesc());
-        holder.temperatureView.setText(cond.getTempString());
+        holder.lineView.setText(cond.getLine());
         Picasso.with(mContext).cancelRequest(holder.iconView);
         Picasso.Builder builder = new Picasso.Builder(mContext);
         builder.listener(new Picasso.Listener() {
