@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.dugsolutions.weatherhunt.data.ConditionDate;
+import com.dugsolutions.weatherhunt.data.BitmapHelper;
 import com.dugsolutions.weatherhunt.data.ConditionLocal;
 import com.dugsolutions.weatherhunt.data.WeatherLocalResult;
-import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -38,9 +38,12 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CustomViewHold
 
     final Context mContext;
     WeatherLocalResult mResult;
+    int mTargetIconSize;
 
     public MainAdapter(Context context) {
         mContext = context;
+        mTargetIconSize = (int) context.getResources().getDimension(R.dimen.icon_size);
+        ConditionLocal.InitRaindrop(mContext);
     }
 
     public void setResult(WeatherLocalResult result) {
@@ -56,7 +59,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CustomViewHold
 
     @Override
     public void onBindViewHolder(final CustomViewHolder holder, int position) {
-        ConditionLocal cond = mResult.getCondition(position);
+        final ConditionLocal cond = mResult.getCondition(position);
         holder.lineView.setText(cond.getLine());
         Picasso.with(mContext).cancelRequest(holder.iconView);
         Picasso.Builder builder = new Picasso.Builder(mContext);
@@ -66,14 +69,26 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CustomViewHold
                 Timber.e(exception);
             }
         });
-        Uri uri = cond.getIconUri();
-        if (uri != null) {
-            builder.build()
-                    .load(uri)
-                    .placeholder(R.drawable.loading)
-                    .memoryPolicy(MemoryPolicy.NO_CACHE)
-                    .fit()
-                    .into(holder.iconView);
+        if (BitmapHelper.getInstance().hasBitmap(cond.weatherCode)) {
+            holder.iconView.setImageBitmap(BitmapHelper.getInstance().getBitmap(cond.weatherCode));
+        } else {
+            Uri uri = cond.getIconUri();
+            if (uri != null) {
+                builder.build()
+                        .load(uri)
+                        .placeholder(R.drawable.loading)
+                        .resize(mTargetIconSize, mTargetIconSize)
+                        .into(holder.iconView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                BitmapHelper.getInstance().storeBitmap(cond.weatherCode, holder.iconView);
+                            }
+
+                            @Override
+                            public void onError() {
+                            }
+                        });
+            }
         }
     }
 

@@ -1,12 +1,6 @@
 package com.dugsolutions.weatherhunt.data;
 
-import android.net.Uri;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-
-import timber.log.Timber;
 
 /**
  * Created by dug on 7/20/17.

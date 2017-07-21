@@ -3,10 +3,8 @@ package com.dugsolutions.weatherhunt.data;
 import android.net.Uri;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import timber.log.Timber;
@@ -57,6 +55,5 @@ public class WeatherSearch extends WeatherBase {
         }
         return weatherResult;
     }
-
 
 }

@@ -1,10 +1,17 @@
 package com.dugsolutions.weatherhunt.data;
 
+import android.content.Context;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.v4.content.res.ResourcesCompat;
+import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+
+import com.dugsolutions.weatherhunt.R;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -22,6 +29,8 @@ public class ConditionLocal {
     public static final SimpleDateFormat dateOnlyFormat2 = new SimpleDateFormat("MMM dd");
     public static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMM dd hh:mm aa");
     public static final SimpleDateFormat dateTimeFormat2 = new SimpleDateFormat("yyyy-MM-dd hh:mm aa");
+
+    static Drawable Raindrop;
 
     static final char DEGREE = (char) 0x00B0;
 
@@ -112,12 +121,17 @@ public class ConditionLocal {
         StringBuilder sbuf = new StringBuilder();
         sbuf.append(getTimeString());
         int endTime = sbuf.length();
+        Integer raindropBegin = null;
+        Integer raindropEnd = null;
+
         if (tempC != null || tempF != null) {
             sbuf.append("  ");
             sbuf.append(getTempString());
             if (precipMM > 0) {
-                sbuf.append("  ");
-                sbuf.append("Precip ");
+                sbuf.append(" ");
+                raindropBegin = sbuf.length();
+                sbuf.append(" P ");
+                raindropEnd = sbuf.length();
                 sbuf.append(precipMM);
                 sbuf.append(" mm");
             }
@@ -131,7 +145,17 @@ public class ConditionLocal {
         span.setSpan(new StyleSpan(Typeface.BOLD), 0, endTime, 0);
         span.setSpan(new RelativeSizeSpan(1.1f), 0, endTime, 0);
         span.setSpan(new RelativeSizeSpan(1.1f), beginDesc, endDesc, 0);
+
+        if (raindropBegin != null && Raindrop != null) {
+            ImageSpan imageSpan = new ImageSpan(Raindrop, ImageSpan.ALIGN_BASELINE);
+            span.setSpan(imageSpan, raindropBegin, raindropEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        }
         return span;
+    }
+
+    public static void InitRaindrop(Context ctx) {
+        Raindrop = ResourcesCompat.getDrawable(ctx.getResources(), R.drawable.raindrop, null);
+        Raindrop.setBounds(0, 0, Raindrop.getIntrinsicWidth(), Raindrop.getIntrinsicHeight());
     }
 
     public Uri getIconUri() {

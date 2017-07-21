@@ -1,7 +1,6 @@
 package com.dugsolutions.weatherhunt.data;
 
 import java.util.ArrayList;
-
 import timber.log.Timber;
 
 /**

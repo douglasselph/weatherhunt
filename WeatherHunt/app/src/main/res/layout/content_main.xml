@@ -42,8 +42,7 @@
         android:layout_below="@id/search_frame"
         android:layout_centerHorizontal="true"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:text="CITY"/>
+        android:textStyle="bold"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/main_list"

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.dugsolutions.weatherhunt.data.BitmapHelper;
+
 import timber.log.Timber;
 
 /**
@@ -19,6 +21,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mCM = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        BitmapHelper.Init();
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
