@@ -61,19 +61,19 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CustomViewHold
     public void onBindViewHolder(final CustomViewHolder holder, int position) {
         final ConditionLocal cond = mResult.getCondition(position);
         holder.lineView.setText(cond.getLine());
-        Picasso.with(mContext).cancelRequest(holder.iconView);
-        Picasso.Builder builder = new Picasso.Builder(mContext);
-        builder.listener(new Picasso.Listener() {
-            @Override
-            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                Timber.e(exception);
-            }
-        });
         if (BitmapHelper.getInstance().hasBitmap(cond.weatherCode)) {
             holder.iconView.setImageBitmap(BitmapHelper.getInstance().getBitmap(cond.weatherCode));
         } else {
             Uri uri = cond.getIconUri();
             if (uri != null) {
+                Picasso.with(mContext).cancelRequest(holder.iconView);
+                Picasso.Builder builder = new Picasso.Builder(mContext);
+                builder.listener(new Picasso.Listener() {
+                    @Override
+                    public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
+                        Timber.e(exception);
+                    }
+                });
                 builder.build()
                         .load(uri)
                         .placeholder(R.drawable.loading)
