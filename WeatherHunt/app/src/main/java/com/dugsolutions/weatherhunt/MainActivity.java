@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         mMainList.addItemDecoration(mDivider);
         mAdapter = new MainAdapter(this);
         mMainList.setAdapter(mAdapter);
+        setTitle(getVersionedTitle());
     }
 
     @Override
@@ -98,5 +99,19 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
         textView.setMaxLines(4);
         snackbar.show();
+    }
+
+    String getVersionedTitle() {
+        StringBuilder sbuf = new StringBuilder();
+        sbuf.append(getString(R.string.app_name));
+        sbuf.append(" - ");
+        try {
+            String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            sbuf.append("v");
+            sbuf.append(version);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+        return sbuf.toString();
     }
 }
