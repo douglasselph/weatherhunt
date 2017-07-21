@@ -118,7 +118,6 @@ mapper/ios-moe/build/
 Thumbs.db
 
 # Android built artifacts
-*.apk
 *.ap_
 *.dex
 
