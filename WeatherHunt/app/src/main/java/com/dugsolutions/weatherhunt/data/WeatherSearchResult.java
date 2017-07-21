@@ -1,4 +1,4 @@
-package com.dugsolutions.weatherhunt;
+package com.dugsolutions.weatherhunt.data;
 
 import java.net.URL;
 import java.util.ArrayList;

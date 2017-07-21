@@ -28,7 +28,7 @@ public class MyApplication extends Application {
     public void huntForWeather(String loc) {
         if (hasConnection()) {
             Intent intent = new Intent(this, WeatherHunterService.class);
-            intent.putExtra(WeatherHunterService.SEARCH_LOCATION, loc);
+            intent.putExtra(WeatherHunterService.GET_WEATHER_LOCATION, loc);
             startService(intent);
         }
     }
