@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 
 import timber.log.Timber;
 
@@ -39,7 +40,6 @@ public class WeatherLocal extends WeatherBase {
             if (result == null) {
                 return null;
             }
-            Timber.d("MYDEBUG: " + result);
             weatherResult = new WeatherLocalResult();
             JSONObject object = new JSONObject(result);
             JSONObject data = object.getJSONObject("data");
@@ -57,7 +57,7 @@ public class WeatherLocal extends WeatherBase {
             for (int i = 0; i < weather.length(); i++) {
                 JSONObject instance = weather.getJSONObject(i);
                 ConditionDate report = new ConditionDate();
-                report.date = getString(instance, "date");
+                report.setDate(getString(instance, "date"));
                 report.maxTempC = getInt(instance, "maxtempC");
                 report.maxTempF = getInt(instance, "maxtempF");
                 report.minTempC = getInt(instance, "mintempC");
@@ -67,7 +67,7 @@ public class WeatherLocal extends WeatherBase {
                     JSONObject hourly = hourlyArray.getJSONObject(h);
                     ConditionHourly chour = new ConditionHourly();
                     query(chour, hourly);
-                    chour.time = getString(hourly, "time");
+                    chour.setTimeOffset(report.date, getString(hourly, "time"));
                     report.hourly.add(chour);
                 }
                 weatherResult.dates.add(report);
@@ -79,9 +79,9 @@ public class WeatherLocal extends WeatherBase {
     }
 
     void query(ConditionLocal local, JSONObject cc) throws JSONException, MalformedURLException {
-        local.time = getString(cc, "observation_time");
-        local.tempC = getInt(cc, "temp_C");
-        local.tempF = getInt(cc, "temp_F");
+        local.setTimeToday(getString(cc, "observation_time"));
+        local.tempC = getInt(cc, "tempC");
+        local.tempF = getInt(cc, "tempF");
         local.weatherCode = getInt(cc, "weatherCode");
         local.weatherIconUrl = getURL(cc, "weatherIconUrl");
         local.weatherDesc = getValue(cc, "weatherDesc");

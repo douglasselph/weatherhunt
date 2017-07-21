@@ -1,11 +1,12 @@
 package com.dugsolutions.weatherhunt.data;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.net.Uri;
 
-import java.io.Serializable;
-import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
+import timber.log.Timber;
 
 /**
  * Created by dug on 7/20/17.
@@ -60,4 +61,5 @@ public class WeatherLocalResult {
         }
         return null;
     }
+
 }

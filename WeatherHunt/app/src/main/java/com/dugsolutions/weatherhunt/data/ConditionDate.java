@@ -2,12 +2,14 @@ package com.dugsolutions.weatherhunt.data;
 
 import java.util.ArrayList;
 
+import timber.log.Timber;
+
 /**
  * Created by dug on 7/20/17.
  */
 
 public class ConditionDate {
-    public String date;
+    public long date;
     public Integer maxTempC;
     public Integer maxTempF;
     public Integer minTempC;
@@ -37,6 +39,14 @@ public class ConditionDate {
 
     public int getCount() {
         return hourly.size();
+    }
+
+    public void setDate(String date) {
+        try {
+            this.date = ConditionLocal.dateOnlyFormat.parse(date).getTime();
+        } catch (Exception ex) {
+            Timber.e(ex);
+        }
     }
 // Another available field: astronomy array
 //    Integer totalSnow_cm;
