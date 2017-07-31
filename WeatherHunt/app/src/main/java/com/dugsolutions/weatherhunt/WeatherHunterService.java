@@ -10,12 +10,19 @@ import com.dugsolutions.weatherhunt.data.WeatherSearch;
 import com.dugsolutions.weatherhunt.data.WeatherSearchResult;
 
 import de.greenrobot.event.EventBus;
-import timber.log.Timber;
 
 /**
  * Created by dug on 7/19/17.
+ *
+ * Query weather results from the internet from within a service. This is but one way to do it.
+ * This way is nice because all internet work can occur quite independently from what activity
+ * the user currently happens to be in.
+ *
+ * Another way would be to simply make the call within an async task. If the user leaves
+ * the APP, there would be no reason to continue the query, and the async task could be killed.
+ *
+ * Another idea: if I wanted to demonstrate the use of RxJava, I could use that instead of this service.
  */
-
 public class WeatherHunterService extends IntentService {
 
     public static final String SEARCH_LOCATION = "query";

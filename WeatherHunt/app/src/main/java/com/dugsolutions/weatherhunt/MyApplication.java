@@ -22,7 +22,6 @@ public class MyApplication extends Application {
         super.onCreate();
         mCM = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         BitmapHelper.Init();
-
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
